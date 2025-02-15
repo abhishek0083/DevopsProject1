@@ -15,7 +15,7 @@ pipeline {
                 script {
                     bat "docker build -t ${env.DOCKER_IMAGE}:latest ."
 
-                    withCredentials([string(credentialsId: 'docker-hub-password', variable: 'DOCKER_PASSWORD')]) {
+                    withCredentials([string(credentialsId: 'aa12fd4c-6a73-43a6-82d3-5f917a65e9bd', variable: 'DOCKER_PASSWORD')]) {
                         bat "docker login -u YOUR_DOCKERHUB_USERNAME -p %DOCKER_PASSWORD%"
                     }
 
