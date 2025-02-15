@@ -9,17 +9,6 @@ pipeline {
             steps {
                 git branch: 'main', url: 'https://github.com/abhishek0083/DevopsProject1.git'
             }
-        }pipeline {
-    agent any
-    environment {
-        DOCKER_IMAGE = 'abhishek0083/my-website'
-        K8S_NAMESPACE = 'ecommerce'
-    }
-    stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'main', url: 'https://github.com/abhishek0083/DevopsProject1.git'
-            }
         }
         stage('Build & Push Docker Image') {
             steps {
