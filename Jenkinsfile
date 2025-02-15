@@ -7,7 +7,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/abhishek0083/DevopsProject1.git'
+                git branch: 'main', url: 'https://github.com/abhishek0083/DevopsProject1.git'
             }
         }
         stage('Build & Push Docker Image') {
@@ -15,8 +15,8 @@ pipeline {
                 script {
                     bat "docker build -t ${env.DOCKER_IMAGE}:latest ."
 
-                    withCredentials([string(credentialsId: 'aa12fd4c-6a73-43a6-82d3-5f917a65e9bd', variable: 'DOCKER_PASSWORD')]) {
-                        bat "docker login -u YOUR_DOCKERHUB_USERNAME -p %DOCKER_PASSWORD%"
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        bat "echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USER% --password-stdin"
                     }
 
                     bat "docker push ${env.DOCKER_IMAGE}:latest"
