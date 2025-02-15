@@ -3,7 +3,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = 'abhishek0083/my-website'
         K8S_NAMESPACE = 'ecommerce'
-        KUBECONFIG = 'C:\\jenkins-kube\\config'  // Path to kubeconfig for Jenkins
+        KUBECONFIG = 'C:\\jenkins-kube\\config' 
     }
     stages {
         stage('Checkout') {
