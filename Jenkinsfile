@@ -16,10 +16,9 @@ pipeline {
                     bat "docker build --no-cache -t ${env.DOCKER_IMAGE}:latest ."
 
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh """
-                        echo Logging into Docker Hub...
-                        echo $DOCKER_PASSWORD | docker login -u $DOCKER_USER --password-stdin
-                        """
+                        sh '''
+                        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USER" --password-stdin
+                        '''
                     }
 
                     bat "docker push ${env.DOCKER_IMAGE}:latest"
