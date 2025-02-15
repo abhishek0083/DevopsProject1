@@ -3,6 +3,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = 'abhishek0083/my-website'
         K8S_NAMESPACE = 'ecommerce'
+        KUBECONFIG = 'C:\\jenkins-kube\\config'  // Path to kubeconfig for Jenkins
     }
     stages {
         stage('Checkout') {
@@ -13,7 +14,7 @@ pipeline {
         stage('Build & Push Docker Image') {
             steps {
                 script {
-                    bat "docker build --no-cache -t %DOCKER_IMAGE%:latest ."
+                    bat "docker build --no-cache -t ${env.DOCKER_IMAGE}:latest ."
 
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
                         bat """
@@ -22,7 +23,7 @@ pipeline {
                         """
                     }
 
-                    bat "docker push %DOCKER_IMAGE%:latest"
+                    bat "docker push ${env.DOCKER_IMAGE}:latest"
                 }
             }
         }
@@ -30,10 +31,12 @@ pipeline {
             steps {
                 script {
                     bat """
-                    kubectl get namespace %K8S_NAMESPACE% || kubectl create namespace %K8S_NAMESPACE%
-                    kubectl apply -f k8s/ -n %K8S_NAMESPACE%
-                    kubectl get pods -n %K8S_NAMESPACE%
-                    kubectl get svc -n %K8S_NAMESPACE%
+                    SET KUBECONFIG=${env.KUBECONFIG}
+                    kubectl config use-context minikube
+                    kubectl get namespace ${env.K8S_NAMESPACE} || kubectl create namespace ${env.K8S_NAMESPACE}
+                    kubectl apply -f k8s/ -n ${env.K8S_NAMESPACE}
+                    kubectl get pods -n ${env.K8S_NAMESPACE}
+                    kubectl get svc -n ${env.K8S_NAMESPACE}
                     """
                 }
             }
