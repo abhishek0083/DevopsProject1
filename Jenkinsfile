@@ -13,26 +13,28 @@ pipeline {
         stage('Build & Push Docker Image') {
             steps {
                 script {
-                    bat "docker build --no-cache -t ${env.DOCKER_IMAGE}:latest ."
+                    bat "docker build --no-cache -t %DOCKER_IMAGE%:latest ."
 
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
                         bat """
                         echo Logging into Docker Hub...
-                        echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USER% --password-stdin
+                        docker login -u %DOCKER_USER% -p %DOCKER_PASSWORD%
                         """
                     }
 
-                    bat "docker push ${env.DOCKER_IMAGE}:latest"
+                    bat "docker push %DOCKER_IMAGE%:latest"
                 }
             }
         }
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    bat "kubectl create namespace ${env.K8S_NAMESPACE} --dry-run=client -o yaml | kubectl apply -f -"
-                    bat "kubectl apply -f k8s/ -n ${env.K8S_NAMESPACE}"
-                    bat "kubectl get pods -n ${env.K8S_NAMESPACE}"
-                    bat "kubectl get svc -n ${env.K8S_NAMESPACE}"
+                    bat """
+                    kubectl get namespace %K8S_NAMESPACE% || kubectl create namespace %K8S_NAMESPACE%
+                    kubectl apply -f k8s/ -n %K8S_NAMESPACE%
+                    kubectl get pods -n %K8S_NAMESPACE%
+                    kubectl get svc -n %K8S_NAMESPACE%
+                    """
                 }
             }
         }
